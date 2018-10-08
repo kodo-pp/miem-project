@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from argparse import ArgumentParser
 
 import fmt
+import audio
 from util import numeric_gradient
 from linear_regression import LinearRegression
 
@@ -28,31 +30,13 @@ def check_gradient(reg, dataset, weights):
         print(fmt.format('Gradient seems to be incorrect', 'red'))
 
 def main():
-
-    # Это наша линейная регрессия
-    reg = LinearRegression(2)
-
-    # Наш большой датасет
-    dataset = [
-        ([3, 1], 5),
-        ([2, 3], 4),
-        ([1, 1], 2),
-    ]
-
-    # Пока зададим веса вручную
-    weights = [1.2, 6.1, -2.3]
-
-    # Проверяем работу
-    print(fmt.format('Checking cost function before learning', 'bold'))
-    check_gradient(reg, dataset, weights)
-    print()
-
-    # Учимся воспринимать этот датасет
-    reg.learn(dataset)
-
-    # И повторяем
-    print(fmt.format('Checking cost function after learning', 'bold'))
-    check_gradient(reg, dataset, reg.weights)
+    count = 0
+    time_quant = 0.2
+    with audio.AudioRecorder() as recorder:
+        while True:
+            for i in recorder.bytes_to_numseq(recorder.record(seconds=time_quant)):
+                count += 1
+            print(count)
 
 if __name__ == '__main__':
     main()
