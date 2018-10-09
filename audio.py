@@ -41,5 +41,5 @@ class AudioRecorder:
             i += size
 
     def close(self):
-        self.input_audio_stream.close()
+        self.stream.close()
         self.pa.terminate()

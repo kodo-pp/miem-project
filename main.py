@@ -5,9 +5,10 @@ import numpy as np
 from argparse import ArgumentParser
 
 import fmt
-import audio
+from audio import AudioRecorder
 from util import numeric_gradient
 from linear_regression import LinearRegression
+from audio_analyzer import AudioAnalyzer
 
 def check_gradient(reg, dataset, weights):
     # Считаем функцию стоимости и её градиент при заданных весах
@@ -32,11 +33,9 @@ def check_gradient(reg, dataset, weights):
 def main():
     count = 0
     time_quant = 0.2
-    with audio.AudioRecorder() as recorder:
-        while True:
-            for i in recorder.bytes_to_numseq(recorder.record(seconds=time_quant)):
-                count += 1
-            print(count)
+    with AudioRecorder(rate=44100) as recorder:
+        analyzer = AudioAnalyzer(recorder)
+        analyzer.analyze()
 
 if __name__ == '__main__':
     main()
