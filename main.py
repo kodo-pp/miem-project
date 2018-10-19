@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
+
 import numpy as np
 from argparse import ArgumentParser
 
@@ -31,11 +33,37 @@ def check_gradient(reg, dataset, weights):
         print(fmt.format('Gradient seems to be incorrect', 'red'))
 
 def main():
-    count = 0
-    time_quant = 0.2
-    with AudioRecorder(rate=44100) as recorder:
+    if '--learn' in sys.argv:
+        learn()
+        return
+    with AudioRecorder(rate=8000) as recorder:
         analyzer = AudioAnalyzer(recorder)
         analyzer.analyze()
+
+def learn():
+    lr = LinearRegression(4000)
+    dataset = []
+    while True:
+        print('Type? [1/0/q]: ', end='')
+        t = input()
+        if t == '0':
+            y = -1
+        elif t == '1':
+            y = 1
+        else:
+            break
+
+        with AudioRecorder(rate=8000) as recorder:
+            print('--- RECORDING ---')
+            data = list(recorder.bytes_to_numseq(recorder.record(4000)))
+            print('--- FINISHED ---')
+            dataset.append((data, y))
+    print('Learning...')
+    lr.learn(dataset)
+    print('Learnt')
+    with open('learnt.txt', 'w') as wf:
+        wf.write(' '.join(map(str, lr.weights)))
+    print('Weigts written to learnt.txt')
 
 if __name__ == '__main__':
     main()

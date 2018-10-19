@@ -81,9 +81,12 @@ class LinearRegression:
         cost = 1 / (2*m) * base_cost + self.regularization_lambda / (2*m) * regularization
         # Конец чёрной магии
 
-        return cost, list(gradient)
+        print('\x1b[A\x1b[2K' 'cost = {:.10f}'.format(cost))
+        return cost, gradient
 
     def learn(self, dataset):
-        func = lambda weights: self.cost(dataset, weights)[0]
-        grad_func = lambda weights: np.array(self.cost(dataset, weights)[1])
-        self.set_weights(minimize(func, np.array(self.weights), jac=grad_func).x)
+        print()
+        func = lambda weights: self.cost(dataset, weights)
+        # grad_func = lambda weights: np.array(self.cost(dataset, weights)[1])
+        # self.set_weights(minimize(func, np.array(self.weights), jac=grad_func, method='CG').x)
+        self.set_weights(minimize(func, np.array(self.weights), jac=True, method='CG', options={'maxiter':2000}).x)

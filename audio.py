@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
 
+import os
+import sys
+
 from pyaudio import PyAudio, paInt16
 
 
 class AudioRecorder:
-    def __init__(self, chunk_size=1024, rate=44100):
+    def __init__(self, rate=8000):
         self.pa = PyAudio()
         self.stream = self.pa.open(
             format            = paInt16,
             channels          = 1,
             rate              = rate,
             input             = True,
-            frames_per_buffer = chunk_size
+            frames_per_buffer = 4000
         )
         self.stream.stop_stream()
-        self.chunk_size = chunk_size
         self.rate = rate
         self.format = paInt16
 
@@ -24,12 +26,9 @@ class AudioRecorder:
     def __exit__(self, *args):
         self.close()
 
-    def record(self, seconds):
-        data = b''
+    def record(self, length):
         self.stream.start_stream()
-        for i in range(int(self.rate / self.chunk_size * seconds)):
-            frame = self.stream.read(self.chunk_size)
-            data += frame
+        data = self.stream.read(length)
         self.stream.stop_stream()
         return data
 
