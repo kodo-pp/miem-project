@@ -7,6 +7,7 @@ import numpy as np
 from argparse import ArgumentParser
 
 import fmt
+import config as conf
 from audio import AudioRecorder
 from util import numeric_gradient
 from linear_regression import LinearRegression
@@ -36,12 +37,12 @@ def main():
     if '--learn' in sys.argv:
         learn()
         return
-    with AudioRecorder(rate=8000) as recorder:
+    with AudioRecorder(rate=conf.sampling_rate) as recorder:
         analyzer = AudioAnalyzer(recorder)
         analyzer.analyze()
 
 def learn():
-    lr = LinearRegression(4000)
+    lr = LinearRegression(conf.block_size)
     dataset = []
     while True:
         print('Type? [1/0/q]: ', end='')
@@ -53,9 +54,9 @@ def learn():
         else:
             break
 
-        with AudioRecorder(rate=8000) as recorder:
+        with AudioRecorder(rate=conf.sampling_rate) as recorder:
             print('--- RECORDING ---')
-            data = list(recorder.bytes_to_numseq(recorder.record(4000)))
+            data = list(recorder.bytes_to_numseq(recorder.record(conf.block_size)))
             print('--- FINISHED ---')
             dataset.append((data, y))
     print('Learning...')

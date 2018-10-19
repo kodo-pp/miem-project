@@ -4,6 +4,8 @@ from util import random_matrix
 import numpy as np
 from scipy.optimize import minimize
 
+import config as conf
+
 # Наша линейная регресия
 class LinearRegression:
     """
@@ -18,7 +20,7 @@ class LinearRegression:
         self.ins = ins
         self.weights = random_matrix(ins + 1, 1)
 
-        self.regularization_lambda = 0.1
+        self.regularization_lambda = conf.regularization
 
     def get(self, inputs, weights = None):
         """
@@ -89,4 +91,4 @@ class LinearRegression:
         func = lambda weights: self.cost(dataset, weights)
         # grad_func = lambda weights: np.array(self.cost(dataset, weights)[1])
         # self.set_weights(minimize(func, np.array(self.weights), jac=grad_func, method='CG').x)
-        self.set_weights(minimize(func, np.array(self.weights), jac=True, method='CG', options={'maxiter':2000}).x)
+        self.set_weights(minimize(func, np.array(self.weights), jac=True, method='CG', options={'maxiter':conf.fmin_max_iter}).x)

@@ -5,16 +5,17 @@ import sys
 
 from pyaudio import PyAudio, paInt16
 
+import config as conf
 
 class AudioRecorder:
-    def __init__(self, rate=8000):
+    def __init__(self, rate):
         self.pa = PyAudio()
         self.stream = self.pa.open(
             format            = paInt16,
             channels          = 1,
             rate              = rate,
             input             = True,
-            frames_per_buffer = 4000
+            frames_per_buffer = conf.block_size
         )
         self.stream.stop_stream()
         self.rate = rate

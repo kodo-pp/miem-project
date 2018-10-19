@@ -3,6 +3,8 @@
 import numpy as np
 import random as rd
 
+import config as conf
+
 def random_matrix(h, w):
     """
     Сгенерировать матрицу размером h × w со случайными значениями от 0 до 1

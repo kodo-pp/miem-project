@@ -3,10 +3,13 @@
 from threading import Thread, Lock
 from queue import Queue
 
+import config as conf
 from linear_regression import LinearRegression
 
 class AudioAnalyzer:
-    def __init__(self, recorder, frame_length=4000, queue_size=441000):
+    def __init__(self, recorder, frame_length=None, queue_size=None):
+        frame_length = frame_length or conf.block_size
+        queue_size = queue_size or conf.queue_size
         self.recorder = recorder
         self.frame_length = frame_length
         self.data = Queue(maxsize=queue_size)
@@ -21,8 +24,8 @@ class AudioAnalyzer:
         try:
             i = 0
             block = []
-            block_step = 40
-            block_length = 4000
+            block_step = conf.block_step
+            block_length = conf.block_size
             max_qsize = 0
             lr = LinearRegression(block_length)
             try:
@@ -42,7 +45,7 @@ class AudioAnalyzer:
                 output = lr.get(block)
                 block = block[block_step:]
 
-                if i % 100 == 0:
+                if i % conf.report_each == 0:
                     print(
                         "\x1b[A"                                    # Подняться на предыдущую строку теминала
                         "\x1b[2K"                                   # Очистить строку

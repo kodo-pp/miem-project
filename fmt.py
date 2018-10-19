@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import config as conf
+
 def format_string(fmt):
     known_formats = {
         'black': '30',
