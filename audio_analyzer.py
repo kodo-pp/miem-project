@@ -4,6 +4,7 @@ from threading import Thread, Lock
 from queue import Queue
 
 import config as conf
+from sliding_diff import sliding_diff
 from linear_regression import LinearRegression
 
 class AudioAnalyzer:
@@ -27,13 +28,13 @@ class AudioAnalyzer:
             block_step = conf.block_step
             block_length = conf.block_size
             max_qsize = 0
-            lr = LinearRegression(block_length)
+            lr = LinearRegression(conf.lr_inputs)
             try:
                 with open('learnt.txt') as rf:
                     print('Reading weights from learnt.txt')
                     weights = [float(i) for i in rf.read().split(' ')]
             except FileNotFoundError:
-                weights = [1] * (block_length + 1)
+                weights = [1] * (conf.lr_inputs + 1)
             lr.set_weights(weights)
             print()
             while True:
@@ -42,7 +43,7 @@ class AudioAnalyzer:
                     block.append(self.data.get(timeout=5))
                 qsize = self.data.qsize()
                 max_qsize = max(max_qsize, qsize)
-                output = lr.get(block)
+                output = lr.get(list(sliding_diff(block, conf.sliding_diff_winsize)))
                 block = block[block_step:]
 
                 if i % conf.report_each == 0:

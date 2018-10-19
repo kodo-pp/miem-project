@@ -8,6 +8,7 @@ from argparse import ArgumentParser
 
 import fmt
 import config as conf
+from sliding_diff import sliding_diff
 from audio import AudioRecorder
 from util import numeric_gradient
 from linear_regression import LinearRegression
@@ -42,7 +43,7 @@ def main():
         analyzer.analyze()
 
 def learn():
-    lr = LinearRegression(conf.block_size)
+    lr = LinearRegression(conf.lr_inputs)
     dataset = []
     while True:
         print('Type? [1/0/q]: ', end='')
@@ -56,7 +57,10 @@ def learn():
 
         with AudioRecorder(rate=conf.sampling_rate) as recorder:
             print('--- RECORDING ---')
-            data = list(recorder.bytes_to_numseq(recorder.record(conf.block_size)))
+            data = list(sliding_diff(
+                list(recorder.bytes_to_numseq(recorder.record(conf.block_size))),
+                conf.sliding_diff_winsize
+            ))
             print('--- FINISHED ---')
             dataset.append((data, y))
     print('Learning...')
