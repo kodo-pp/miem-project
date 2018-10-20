@@ -9,7 +9,7 @@ def random_matrix(h, w):
     """
     Сгенерировать матрицу размером h × w со случайными значениями от 0 до 1
     """
-    return np.array([[rd.random() for i in range(w)] for i in range(h)], dtype=float)
+    return np.array([[rd.random() - 0.5 for i in range(w)] for i in range(h)], dtype=float)
 
 def numeric_gradient(func, args):
     """

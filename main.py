@@ -49,9 +49,9 @@ def learn():
         print('Type? [1/0/q]: ', end='')
         t = input()
         if t == '0':
-            y = -1
+            y = -1000
         elif t == '1':
-            y = 1
+            y = 1000
         else:
             break
 
@@ -66,6 +66,8 @@ def learn():
     print('Learning...')
     lr.learn(dataset)
     print('Learnt')
+    for x, y in dataset:
+        print('y = {}, predicted_y = {}'.format(y, lr.get(x)))
     with open('learnt.txt', 'w') as wf:
         wf.write(' '.join(map(str, lr.weights)))
     print('Weigts written to learnt.txt')
