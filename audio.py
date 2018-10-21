@@ -2,6 +2,7 @@
 
 import os
 import sys
+from threading import Thread, Lock
 
 from pyaudio import PyAudio, paInt16
 
@@ -26,6 +27,33 @@ class AudioRecorder:
 
     def __exit__(self, *args):
         self.close()
+
+    def start_recording(self):
+        self.lock = Lock()
+        self._do_stop_recording = False
+        def record_func(self):
+            data = b''
+            while True:
+                with self.lock:
+                    if self._do_stop_recording:
+                        break
+                data += self.record(conf.block_size)
+            with self.lock:
+                self._do_stop_recording = False
+            self._recorded_data = data
+        self._recorder_thread = Thread(target=record_func, args=(self,))
+        self._recorder_thread.daemon = True
+        self._recorder_thread.start()
+
+    def finish_recording(self):
+        sys.stdout.flush()
+        with self.lock:
+            sys.stdout.flush()
+            self._do_stop_recording = True
+        sys.stdout.flush()
+        self._recorder_thread.join()
+        sys.stdout.flush()
+        return self._recorded_data
 
     def record(self, length):
         self.stream.start_stream()

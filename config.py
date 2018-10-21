@@ -6,7 +6,6 @@ block_step = 400
 sampling_rate = 8000
 queue_size = 512000
 report_each = 100
-regularization = 0.1
+regularization = 0.0
 sliding_diff_winsize = 10
-
-lr_inputs = block_size - sliding_diff_winsize + 1
+lr_inputs = 20

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import math
 
 import numpy as np
 import random as rd
@@ -38,3 +39,28 @@ def numeric_gradient(func, args):
         # Частная производная вычисляется (почти) по определению
         grad[i] = (y1 - y2) / (2 * eps)
     return grad
+
+def scale_array(arr, n):
+    eps = 1e-7
+    m = len(arr)
+    # arr = list(_arr) + [_arr[-1]]
+    blen = m / n
+    offset = 0
+    new_arr = []
+    for i in range(n):
+        # bi = math.ceil(offset)
+        # ei = math.floor(offset + blen)
+        xi = math.ceil(offset + blen - eps) - 1
+        yi = math.floor(offset + eps) + 1
+        if xi < yi:
+            accum = blen * arr[math.floor(offset)]
+        elif xi == yi:
+            accum = (yi - offset) * arr[math.floor(offset)] + (offset + blen - xi) * arr[xi]
+        else:
+            accum = (yi - offset) * arr[math.floor(offset)] + (offset + blen - xi) * arr[xi] + sum(arr[yi:xi])
+        new_arr.append(accum / blen)
+        offset += blen
+    return new_arr
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))

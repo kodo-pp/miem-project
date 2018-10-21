@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from util import random_matrix
+from util import random_matrix, sigmoid
 import numpy as np
 from scipy.optimize import minimize
 
@@ -37,7 +37,10 @@ class LinearRegression:
 
         # Одно простае умножение матриц, и ответ уже у нас
         output_value = np.matmul(input_values, weights)
-        return output_value
+
+        # Ну почти, осталось только применить функцию сигмоида - то, что делает
+        # нашу линейную регрессию логистической (но пока она называется LinearRegression)
+        return sigmoid(output_value)
 
     def set_weights(self, weights):
         """
