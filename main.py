@@ -7,6 +7,7 @@ import gzip
 import json
 import hashlib
 import math
+import random as rd
 
 import numpy as np
 from argparse import ArgumentParser
@@ -136,19 +137,36 @@ def learn():
     labels = get_labels()
     mlr = MultiLogisticRegression(labels, conf.lr_inputs)
     dataset = list(read_examples('data'))
+
+    rd.shuffle(dataset)
+    m = len(dataset)
+    train_m = int(0.7 * m)
+    train_set = dataset[:train_m]
+    test_set = dataset[train_m:]
+    test_m = len(test_set)
     print('Learning...')
-    mlr.learn(dataset)
+    mlr.learn(train_set)
     print('Learnt')
-    for x, y in dataset:
-        pred = mlr.getlabel(x, debug=True)
-        if pred is None:
-            ok = '\x1b[31m( FAIL )\x1b[0m'
-        else:
-            ok = '\x1b[32m(  OK  )\x1b[0m'
-        print('y = {}, predicted_y = {}   {}'.format(y, pred, ok))
+
+
+    correct = 0
+    for x, y in train_set:
+        pred = mlr.getlabel(x)
+        if pred == y:
+            correct += 1
+    print('Results on train set: {:2f}% accuracy'.format(100 * correct / train_m))
+
+    correct = 0
+    for x, y in test_set:
+        pred = mlr.getlabel(x)
+        if pred == y:
+            correct += 1
+    print('Results on test set: {:2f}% accuracy'.format(100 * correct / test_m))
     with open('trained_data.json', 'w') as wf:
         wf.write(mlr.export_weights())
-    print('Weigts written to trained_data.json')
+    print('Weights written to trained_data.json')
+
+
 
 if __name__ == '__main__':
     main()
