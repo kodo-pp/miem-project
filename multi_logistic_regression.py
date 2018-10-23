@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import json
+
 from linear_regression import LinearRegression
 
 class MultiLogisticRegression:
@@ -9,13 +11,15 @@ class MultiLogisticRegression:
     def at(self, label):
         return self.lrs[label]
 
-    def get(self, x):
+    def get(self, x, debug=False):
         predicted = {label: self.lrs[label].get(x) for label in self.lrs.keys()}
         predicted_tuples = list(reversed(sorted([(j, i) for i, j in predicted.items()])))
+        if debug:
+            print('MLR.get(): predicted_tuples = {}'.format(predicted_tuples))
         return max(predicted_tuples)
 
-    def getlabel(self, x, treshold=0.5):
-        q, label = self.get(x)
+    def getlabel(self, x, treshold=0.5, debug=False):
+        q, label = self.get(x, debug=debug)
         if q < treshold:
             return None
         return label
@@ -30,23 +34,10 @@ class MultiLogisticRegression:
             print('Training: {} / {}'.format(i + 1, len(datasets)))
             self.lrs[label].learn(dset)
 
-# TEST
-mlr = MultiLogisticRegression(['foo', 'bar', 'baz'], 2)
-mlr.learn([
-    ([4, 7], 'foo'),
-    ([2, 4], 'baz'),
-    ([8, 1], 'foo'),
-    ([2, 6], 'foo'),
-    ([6, 8], 'bar'),
-    ([2, 2], 'baz'),
-    ([7, 3], 'foo'),
-])
-print(mlr.get([4, 7]))
-print(mlr.get([2, 4]))
-print(mlr.get([8, 1]))
-print(mlr.get([2, 6]))
+    def export_weights(self):
+        return json.dumps({i: list(j.weights) for i, j in self.lrs.items()})
 
-print(mlr.getlabel([4, 7]))
-print(mlr.getlabel([2, 4]))
-print(mlr.getlabel([8, 1]))
-print(mlr.getlabel([2, 6]))
+    def import_weights(self, s):
+        weights = json.loads(s)
+        for i, j in weights.items():
+            self.lrs[i].set_weights(j)
