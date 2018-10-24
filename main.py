@@ -10,16 +10,12 @@ import math
 import random as rd
 
 import numpy as np
-from argparse import ArgumentParser
 
 import fmt
 import config as conf
 from sliding_diff import sliding_diff
 from audio import AudioRecorder
 from util import numeric_gradient, scale_array
-from linear_regression import LinearRegression
-from multi_logistic_regression import MultiLogisticRegression
-from audio_analyzer import AudioAnalyzer
 from svm import Svm
 
 def check_gradient(reg, dataset, weights):
@@ -86,14 +82,14 @@ def recognize():
             input()
             data = list(recorder.bytes_to_numseq(recorder.finish_recording()))
             transformed_data = list(sliding_diff(data, conf.sliding_diff_winsize))
-            scaled_data = scale_array(transformed_data, conf.lr_inputs)
+            scaled_data = scale_array(transformed_data, conf.svm_inputs)
             pred = svm.get(scaled_data)
             print('\x1b[A\x1b[2K' 'Predicted output: {}'.format(pred))
 
 def transform():
     for data, y in read_examples('raw_data'):
         transformed_data = list(sliding_diff(data, conf.sliding_diff_winsize))
-        scaled_data = scale_array(transformed_data, conf.lr_inputs)
+        scaled_data = scale_array(transformed_data, conf.svm_inputs)
         write_example((scaled_data, y), 'data')
 
 def write_example(data, dirname):
