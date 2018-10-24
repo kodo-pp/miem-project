@@ -40,7 +40,7 @@ def check_gradient(reg, dataset, weights):
 
 def main():
     if (len(sys.argv) < 2):
-        print('Usage: {} {{collect | learn | recognize}}'.format(sys.argv[0]))
+        print('Usage: {} {{set-labels | collect | transform | learn | recognize}}'.format(sys.argv[0]))
         return
     command = sys.argv[1]
     if command == 'learn':
