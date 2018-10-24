@@ -63,6 +63,10 @@ def scale_array(arr, n):
     return new_arr
 
 def sigmoid(z):
-    if z < -100:
-        return 0
-    return 1 / (1 + math.exp(-z))
+    t = z < -100
+    nt = 1 - t
+    fz = z * nt - 100 * t
+    return 1 / (1 + np.exp(-fz))
+
+def sigmoid_gradient(z):
+    return sigmoid(z) * (1 - sigmoid(z))

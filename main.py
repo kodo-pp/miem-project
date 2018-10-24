@@ -20,6 +20,7 @@ from util import numeric_gradient, scale_array
 from linear_regression import LinearRegression
 from multi_logistic_regression import MultiLogisticRegression
 from audio_analyzer import AudioAnalyzer
+from svm import Svm
 
 def check_gradient(reg, dataset, weights):
     # Считаем функцию стоимости и её градиент при заданных весах
@@ -73,9 +74,9 @@ def get_labels():
 
 def recognize():
     with AudioRecorder(rate=conf.sampling_rate) as recorder:
-        mlr = MultiLogisticRegression(get_labels(), conf.lr_inputs)
-        with open('trained_data.json') as f:
-            mlr.import_weights(f.read())
+        svm = Svm()
+        with open('trained_data.pickle.b64') as f:
+            svm.import_model(f.read())
         while True:
             print()
             print('\x1b[A\x1b[2K' 'Press Enter to start recording or Ctrl+C to exit')
@@ -86,7 +87,7 @@ def recognize():
             data = list(recorder.bytes_to_numseq(recorder.finish_recording()))
             transformed_data = list(sliding_diff(data, conf.sliding_diff_winsize))
             scaled_data = scale_array(transformed_data, conf.lr_inputs)
-            pred = mlr.getlabel(scaled_data, debug=True)
+            pred = svm.get(scaled_data)
             print('\x1b[A\x1b[2K' 'Predicted output: {}'.format(pred))
 
 def transform():
@@ -135,7 +136,8 @@ def collect():
 
 def learn():
     labels = get_labels()
-    mlr = MultiLogisticRegression(labels, conf.lr_inputs)
+    # mlr = MultiLogisticRegression(labels, conf.lr_inputs)
+    svm = Svm()
     dataset = list(read_examples('data'))
 
     rd.shuffle(dataset)
@@ -145,26 +147,26 @@ def learn():
     test_set = dataset[train_m:]
     test_m = len(test_set)
     print('Learning...')
-    mlr.learn(train_set)
+    svm.learn(train_set)
     print('Learnt')
 
 
     correct = 0
     for x, y in train_set:
-        pred = mlr.getlabel(x)
+        pred = svm.get(x)
         if pred == y:
             correct += 1
     print('Results on train set: {:2f}% accuracy'.format(100 * correct / train_m))
 
     correct = 0
     for x, y in test_set:
-        pred = mlr.getlabel(x)
+        pred = svm.get(x)
         if pred == y:
             correct += 1
     print('Results on test set: {:2f}% accuracy'.format(100 * correct / test_m))
-    with open('trained_data.json', 'w') as wf:
-        wf.write(mlr.export_weights())
-    print('Weights written to trained_data.json')
+    with open('trained_data.pickle.b64', 'w') as wf:
+        wf.write(svm.export_model())
+    print('Weights written to trained_data.pickle.b64')
 
 
 
