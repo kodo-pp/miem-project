@@ -57,7 +57,7 @@ def main():
     elif command == 'recognize':
         recognize()
     else:
-        print('Usage: {} {{collect | learn | recognize}}'.format(sys.argv[0]))
+        print('Usage: {} {{set-labels | collect | transform | learn | recognize}}'.format(sys.argv[0]))
         return
 
 def set_labels():
