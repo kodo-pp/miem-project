@@ -18,7 +18,7 @@ class MultiLogisticRegression:
             print('MLR.get(): predicted_tuples = {}'.format(predicted_tuples))
         return max(predicted_tuples)
 
-    def getlabel(self, x, treshold=0.5, debug=False):
+    def getlabel(self, x, treshold=0.0, debug=False):
         q, label = self.get(x, debug=debug)
         if q < treshold:
             return None
