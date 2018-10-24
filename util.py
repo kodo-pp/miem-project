@@ -63,4 +63,6 @@ def scale_array(arr, n):
     return new_arr
 
 def sigmoid(z):
+    if z < -100:
+        return 0
     return 1 / (1 + math.exp(-z))
